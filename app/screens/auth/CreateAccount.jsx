@@ -35,7 +35,7 @@ const CreateAccount = ({ navigation }) => {
       });
 
       if (response) {
-        navigation.navigate('SigninScreen');
+        navigation.navigate('OTPScreen');
       }
     } catch (error) {
       console.error('API call failed:', error);
@@ -139,7 +139,8 @@ const CreateAccount = ({ navigation }) => {
           space={20}
           text="Continue"
           loading={loading}
-          onPress={onSubmit}
+          // onPress={onSubmit}
+          onPress={() => navigation.navigate('OTPScreen')}
         />
       </View>
     </ClientsLayout>
