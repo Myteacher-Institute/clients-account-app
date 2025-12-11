@@ -1,4 +1,5 @@
 import { fonts, colors } from '@/theme';
+import { kycMeta } from '@/utils/kycMeta';
 import { useUser } from '@/context/UserContext';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,17 +8,18 @@ import { Text, View, Image, Pressable, StyleSheet } from 'react-native';
 const DashboardHeader = () => {
     const { user } = useUser();
     const navigation = useNavigation();
+    const { icon, color } = kycMeta(useUser().user?.kyc);
 
     return (
         <View style={styles.container}>
             <Pressable style={styles.profile} onPress={() => navigation.navigate('Account')}>
                 <Image
+                    style={styles.profileImg}
                     source={user?.avatar ? { uri: user.avatar } : require('@/assets/images/profile.png')}
-                    style={[styles.profileImg, { borderColor: (user?.kyc && user?.kyc?.verificationStatus === 'verified' ? colors.green4 : (user?.kyc ? colors.yellow3 : colors.red4)) }]}
                 />
                 <Text style={styles.profileName}>
                     Hi, {user?.fullName?.split(' ')[0] || 'Guest'}
-                    {user?.kyc && <Icon name="alert-decagram" color={colors.yellow3} size={20} />}
+                    {' '}<Icon name={icon} size={20} color={color} />
                 </Text>
             </Pressable>
 
@@ -46,7 +48,6 @@ const styles = StyleSheet.create({
     profileImg: {
         width: 40,
         height: 40,
-        borderWidth: 3,
         borderRadius: 50,
         resizeMode: 'cover',
     },

@@ -1,5 +1,6 @@
 import { useToast } from '@/hooks';
 import { fonts, colors } from '@/theme';
+import { kycMeta } from '@/utils/kycMeta';
 import { useUser } from '@/context/UserContext';
 import ClientsButton from '@/components/ClientsButton';
 import { useNavigation } from '@react-navigation/native';
@@ -10,41 +11,46 @@ const AccountDetails = () => {
     const toast = useToast();
     const { user } = useUser();
     const navigation = useNavigation();
+    const { color, state } = kycMeta(useUser().user?.kyc);
 
     const handlePress = () => {
-        if (user?.kyc && user?.kyc?.verificationStatus === 'verified') {
+        if (state === 'verified') {
             Clipboard.setString(user?.wallet?.accountNumber ?? '');
             toast.showSuccess('Copied to clipboard!');
-        } else if (user?.kyc) {
+        } else if (state === 'pending') {
             Linking.openURL('mailto:').catch(() =>
                 toast.showWarning('Unable to open mail app')
             );
-        } else { navigation.navigate('KYCScreen', { data: user }); }
+        } else {
+            navigation.navigate('KYCScreen', { data: user });
+        }
     };
 
     return (
-        <View style={[{ backgroundColor: (user?.kyc && user?.kyc?.verificationStatus === 'verified' ? colors.white : (user?.kyc ? colors.yellow3 : colors.red4)) }, styles.container]}>
+        <View style={[{ backgroundColor: state === 'verified' ? colors.white : color }, styles.container]}>
             <View>
-                {!user?.kyc && <Text style={styles.account}>Account Details</Text>}
-                {!user?.kyc && <Text style={styles.kyc}>Verification Alert</Text>}
-                {user?.kyc?.verificationStatus === 'unverified' && <Text style={styles.kyc}>Verification Pending</Text>}
-                {!user?.kyc && <Text style={styles.number}>{user?.wallet?.accountNumber}</Text>}
-                {!user?.kyc && <Text style={styles.name}>{user?.wallet?.accountName}</Text>}
-                {!user?.kyc && <Text style={styles.name}>{user?.wallet?.bankName}</Text>}
-                {!user?.kyc && <Text style={[styles.account, { color: colors.white }]}>
-                    {'Proceed to complete\nyour KYC to be verified.\nThank you!'}
+                {state === 'verified' && <Text style={styles.account}>Account Details</Text>}
+                {state === 'verified' && <Text style={styles.number}>{user?.wallet?.accountNumber}</Text>}
+                {state === 'verified' && <Text style={styles.name}>{user?.wallet?.accountName}</Text>}
+                {state === 'verified' && <Text style={styles.name}>{user?.wallet?.bankName}</Text>}
+
+                {state === 'pending' && <Text style={styles.kyc}>Verification Pending</Text>}
+                {state === 'pending' && <Text style={[styles.account, { color: colors.white }]}>
+                    {"You'll be notified via email\nonce verified (after 24 hours)."}
                 </Text>}
-                {user?.kyc?.verificationStatus === 'unverified' && <Text style={[styles.account, { color: colors.white }]}>
-                    {'We\'ll notify you after 24 hours\nvia email\nwhen you\'ve been verified.'}
+
+                {state === 'unverified' && <Text style={styles.kyc}>Verification Alert</Text>}
+                {state === 'unverified' && <Text style={[styles.account, { color: colors.white }]}>
+                    {'Proceed to complete\nyour KYC to be verified.\nThank you!'}
                 </Text>}
             </View>
             <ClientsButton
                 iconSize={14}
                 onPress={handlePress}
-                bgColor={user?.kyc && user?.kyc?.verificationStatus === 'verified' ? colors.grey9 : colors.white}
-                text={user?.kyc && user?.kyc?.verificationStatus === 'verified' ? 'Copy' : (user?.kyc ? 'Email' : 'Verify')}
-                leftIcon={user?.kyc && user?.kyc?.verificationStatus === 'verified' ? 'copy' : (user?.kyc ? 'mail' : 'shield-checkmark')}
-                textColor={user?.kyc && user?.kyc?.verificationStatus === 'verified' ? colors.grey7 : (user?.kyc ? colors.yellow3 : colors.red4)}
+                bgColor={state === 'verified' ? colors.grey9 : colors.white}
+                text={state === 'verified' ? 'Copy' : state === 'pending' ? 'Email' : 'Verify'}
+                leftIcon={state === 'verified' ? 'copy' : state === 'pending' ? 'mail' : 'shield-checkmark'}
+                textColor={state === 'verified' ? colors.grey7 : state === 'pending' ? colors.yellow3 : colors.red4}
             />
         </View>
     );

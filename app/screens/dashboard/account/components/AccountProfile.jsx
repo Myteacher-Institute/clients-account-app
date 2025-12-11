@@ -1,4 +1,5 @@
 import { colors, fonts } from '@/theme';
+import { kycMeta } from '@/utils/kycMeta';
 import { useMedia } from '@/hooks/useMedia';
 import { CropView } from 'react-native-image-crop-tools';
 import Icon from 'react-native-vector-icons/FontAwesome6';
@@ -20,12 +21,14 @@ const AccountProfile = () => {
     onImageCrop,
     openViewPhoto,
   } = useMedia();
+  const { color, state } = kycMeta(user?.kyc);
+
 
   return (
     <View style={styles.container}>
       <View style={styles.imageWrapper}>
         <Image
-          style={styles.profileImg}
+          style={[styles.profileImg, { borderColor: color }]}
           source={photoUri ? { uri: photoUri } : require('@/assets/images/profile.png')}
         />
         <Pressable style={styles.cameraIcon} onPress={openOptions}>
@@ -36,20 +39,22 @@ const AccountProfile = () => {
       <Text style={styles.name}>{user?.fullName}</Text>
       <Text numberOfLines={1} style={styles.chamber}>{user?.chamberName}</Text>
 
-      <View style={styles.button}>
-        <View style={[styles.pill, styles.button, { backgroundColor: (user?.kyc ? colors.green5 : colors.red1) }]}>
-          <Icon name="circle-check" solid size={12} color={user?.kyc ? colors.green4 : colors.red4} />
-          <Text style={[styles.pillText, { color: (user?.kyc ? colors.green4 : colors.red4) }]}>
-            Verified Lawyer
-          </Text>
+      {state === 'verified' && (
+        <View style={styles.button}>
+          <View style={[styles.pill, styles.button, { backgroundColor: colors.green5 }]}>
+            <Icon name="circle-check" solid size={12} color={colors.green4} />
+            <Text style={[styles.pillText, { color: colors.green4 }]}>
+              Verified Lawyer
+            </Text>
+          </View>
+          <View style={[styles.pill, styles.button, { backgroundColor: colors.blue8 }]}>
+            <Icon name="wallet" size={12} color={colors.blue4} />
+            <Text style={[styles.pillText, { color: colors.blue4 }]}>
+              Active Wallet
+            </Text>
+          </View>
         </View>
-        <View style={[styles.pill, styles.button, { backgroundColor: (user?.kyc ? colors.blue8 : colors.grey4) }]}>
-          <Icon name="wallet" size={12} color={user?.kyc ? colors.blue4 : colors.grey1} />
-          <Text style={[styles.pillText, { color: (user?.kyc ? colors.blue4 : colors.grey1) }]}>
-            Active Wallet
-          </Text>
-        </View>
-      </View>
+      )}
 
       <ClientsModal
         visible={!!modal}
@@ -117,7 +122,6 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderRadius: 50,
     resizeMode: 'cover',
-    borderColor: colors.blue3,
   },
   cameraIcon: {
     right: 3,

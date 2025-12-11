@@ -6,7 +6,8 @@ import OTPTextView from 'react-native-otp-textinput';
 import { Text, View, StyleSheet } from 'react-native';
 import { ClientsButton, ClientsLayout } from '@/components';
 
-const OTPScreen = ({ navigation }) => {
+const OTPScreen = ({ route, navigation }) => {
+  const { email } = route.params;
   const { fetchUser } = useUser();
   const { post, loading } = useApi();
 
@@ -37,15 +38,15 @@ const OTPScreen = ({ navigation }) => {
   return (
     <ClientsLayout title="OTP Verification">
       <View style={styles.container}>
-        <Text style={styles.label}>Enter the 6-digit code sent to you at user@gmail.com</Text>
+        <Text style={styles.label}>Enter the 6-digit code sent to you at {email}</Text>
         <OTPTextView inputCount={6} tintColor={colors.black} textInputStyle={styles.otpInput} />
         <Text style={styles.resend}>I haven&apos;t received a code (0.09)</Text>
       </View>
 
       <ClientsButton
         space={20}
-        text="Continue"
         loading={loading}
+        text="Verify Email"
         onPress={() => navigation.navigate('SigninScreen')}
       />
     </ClientsLayout>
