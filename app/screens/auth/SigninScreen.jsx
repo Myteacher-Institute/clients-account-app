@@ -5,15 +5,15 @@ import { useUser } from '@/context/UserContext';
 import { ClientsInput, ClientsButton } from '@/components';
 import { Text, View, Image, Keyboard, Platform, ScrollView, StyleSheet, ImageBackground, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
 
-const SigninScreen = ({ navigation }) => {
+const SigninScreen = ({ route, navigation }) => {
   const { fetchUser } = useUser();
   const { post, loading } = useApi();
-  const { bind, values, validate } = useForm({ email: '', password: '' });
+
+  const prefill = route.params?.prefill || { email: '', password: '' };
+  const { bind, values, validate } = useForm({ email: prefill.email, password: prefill.password });
 
   const onSubmit = async () => {
-    if (!validate()) {
-      return;
-    }
+    if (!validate()) { return; }
 
     try {
       const response = await post({
@@ -25,9 +25,7 @@ const SigninScreen = ({ navigation }) => {
 
       if (response?.token) {
         await setToken(response.token);
-        console.log('[SigninScreen] Token stored.');
-
-        let fetchedUser = await fetchUser();
+        const fetchedUser = await fetchUser();
         const kycStatus = fetchedUser?.kyc;
 
         !kycStatus
@@ -46,8 +44,8 @@ const SigninScreen = ({ navigation }) => {
           <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={styles.section}>
             <Image source={require('@/assets/images/brand.png')} style={styles.brand} />
 
-            <ClientsInput type="email" name="mail" {...bind('email')} label="Email Address" leftIcon="mail-outline" placeholder="you@email.com" />
-            <ClientsInput isPassword type="password" label="Password" {...bind('password')} leftIcon="lock-closed" placeholder="Enter your password" />
+            <ClientsInput type="email" {...bind('email')} label="Email Address" leftIcon="mail-outline" placeholder="you@email.com" />
+            <ClientsInput isPassword label="Password" {...bind('password')} leftIcon="lock-closed" placeholder="Enter your password" />
 
             <Text style={styles.forgot}>Forgot Password?</Text>
 

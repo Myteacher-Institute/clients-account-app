@@ -54,7 +54,7 @@ const AppNavigator = () => {
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="Verification" component={Verification} />
         <Stack.Screen name="CreateAccount" component={CreateAccount} />
-        {user && <Stack.Screen name="Dashboard" component={DashboardNavigator} />}
+        <Stack.Screen name="Dashboard" component={DashboardNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
   );

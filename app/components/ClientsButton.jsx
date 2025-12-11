@@ -22,39 +22,36 @@ const ClientsButton = ({
 }) => {
     const finalBg = bgColor ?? (isLight ? colors.white : colors.black);
     const finalText = textColor ?? (isLight ? colors.black : colors.white);
-    const margin = {
-        marginTop: typeof space === 'number' ? space : space?.top || 0,
-        marginBottom: typeof space === 'object' ? space?.bottom || 0 : 0,
-    };
 
     const containerStyle = [
         {
+            marginTop: space?.top ?? (typeof space === 'number' ? space : 0),
             backgroundColor: outline ? 'transparent' : finalBg,
             borderColor: outline ? finalText : 'transparent',
+            marginBottom: space?.bottom ?? 0,
             borderRadius: rounded ? 50 : 8,
             borderWidth: outline ? 1 : 0,
+            opacity: loading ? 0.6 : 1,
         },
         styles.container,
         extraStyle,
-        margin,
     ];
 
-    const icon = (name) => name ? <IconComponent name={name} size={iconSize} color={finalText} /> : null;
+    const renderIcon = (name) => name ? <IconComponent name={name} size={iconSize} color={finalText} /> : null;
 
     return (
         <Pressable
             {...rest}
-            onPress={onPress}
-            disabled={loading}
-            style={({ pressed }) => [containerStyle, { opacity: loading ? 1 : pressed ? 0.85 : 1 }]}
+            onPress={loading ? undefined : onPress}
+            style={({ pressed }) => [containerStyle, { opacity: pressed && !loading ? 0.85 : containerStyle[0].opacity }]}
         >
             {loading ? (
                 <ActivityIndicator size="small" color={finalText} />
             ) : (
                 <View style={styles.content}>
-                    {icon(leftIcon)}
+                    {renderIcon(leftIcon)}
                     <Text style={[fonts.medium(16), { color: finalText }, textStyle]}>{text}</Text>
-                    {icon(rightIcon)}
+                    {renderIcon(rightIcon)}
                 </View>
             )}
         </Pressable>

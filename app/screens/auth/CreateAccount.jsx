@@ -21,9 +21,7 @@ const CreateAccount = ({ navigation }) => {
   const addChambers = name => name.trim() ? name.replace(/\s+and\s+/gi, ' & ').replace(/\s+Chambers?$/i, '').trim() + ' Chambers' : '';
 
   const onSubmit = async () => {
-    if (!validate()) {
-      return;
-    }
+    if (!validate()) {return;}
 
     try {
       const response = await post({
@@ -35,7 +33,7 @@ const CreateAccount = ({ navigation }) => {
       });
 
       if (response) {
-        navigation.navigate('OTPScreen', { email : values.email });
+        navigation.navigate('OTPScreen', { email: values.email, password: values.password });
       }
     } catch (error) {
       console.error('API call failed:', error);
@@ -48,8 +46,8 @@ const CreateAccount = ({ navigation }) => {
     {
       key: 'other',
       label: 'Other',
-      icon: 'ellipse-outline',
       color: colors.grey4,
+      icon: 'ellipse-outline',
     },
   ];
 
@@ -109,39 +107,12 @@ const CreateAccount = ({ navigation }) => {
           })}
         </View>
 
-        <ClientsInput
-          type="nin"
-          darkLabel="NIN"
-          placeholder="Enter NIN"
-          {...bind('nin')}
-        />
-        <ClientsInput
-          type="email"
-          darkLabel="Email"
-          placeholder="Enter email"
-          {...bind('email')}
-        />
-        <ClientsInput
-          type="phone"
-          darkLabel="Phone"
-          placeholder="Enter phone"
-          {...bind('phone')}
-        />
-        <ClientsInput
-          isPassword
-          type="password"
-          darkLabel="Password"
-          placeholder="Create password"
-          {...bind('password')}
-        />
+        <ClientsInput type="nin" darkLabel="NIN" {...bind('nin')} placeholder="Enter NIN" />
+        <ClientsInput type="email" darkLabel="Email" {...bind('email')} placeholder="Enter email" />
+        <ClientsInput type="phone" darkLabel="Phone" {...bind('phone')} placeholder="Enter phone" />
+        <ClientsInput isPassword darkLabel="Password" {...bind('password')} placeholder="Create password" />
 
-        <ClientsButton
-          space={20}
-          text="Continue"
-          loading={loading}
-          // onPress={onSubmit}
-          onPress={() => navigation.navigate('OTPScreen', { email : values.email })}
-        />
+        <ClientsButton space={20} text="Continue" loading={loading} onPress={onSubmit} />
       </View>
     </ClientsLayout>
   );

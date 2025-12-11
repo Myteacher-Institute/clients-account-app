@@ -20,22 +20,12 @@ const maskTypeMap = {
   nin: { type: 'custom', options: { mask: '99999999999' } },
   currency: {
     type: 'money',
-    options: {
-      unit: '₦',
-      precision: 2,
-      separator: '.',
-      delimiter: ',',
-      suffixUnit: '',
-    },
+    options: { unit: '₦', precision: 2, separator: '.', delimiter: ',', suffixUnit: '' },
   },
 };
 
-const getAutoCapitalize = (type, userDefined) => {
-  if (userDefined !== undefined) {
-    return userDefined;
-  }
-  return ['email', 'password', 'nin', 'scn', 'cac'].includes(type) ? 'none' : 'words';
-};
+const getAutoCapitalize = (type, userDefined) =>
+  userDefined !== undefined ? userDefined : ['email', 'password', 'nin', 'scn', 'cac'].includes(type) ? 'none' : 'words';
 
 const ClientsInput = forwardRef(
   (
@@ -61,41 +51,41 @@ const ClientsInput = forwardRef(
     const [secure, setSecure] = useState(!!isPassword);
 
     const mask = maskTypeMap[type];
-    const masked = !!maskTypeMap[type];
-    const Input = masked ? TextInputMask : TextInput;
     const labelColor = darkLabel ? colors.grey1 : colors.white;
     const inputBg = darkMode ? colors.black : colors.offWhite0;
     const displayLabel = typeof darkLabel === 'string' ? darkLabel : label;
-    const icon = (name) => name && <IconComponent name={name} size={20} color={iconColor} />;
+    const InputComponent = isPassword ? TextInput : mask ? TextInputMask : TextInput;
+
+    const renderIcon = (name) => (name ? <IconComponent name={name} size={20} color={iconColor} /> : null);
 
     const right = isPassword ? (
       <Pressable onPress={() => setSecure(!secure)}>
         <IconComponent name={secure ? 'eye-off' : 'eye'} size={20} color={iconColor} />
       </Pressable>
     ) : rightIcon ? (
-      onRightIconPress ? <Pressable onPress={onRightIconPress}>{icon(rightIcon)}</Pressable> : icon(rightIcon)
+      onRightIconPress ? <Pressable onPress={onRightIconPress}>{renderIcon(rightIcon)}</Pressable> : renderIcon(rightIcon)
     ) : null;
 
     return (
       <View style={styles.container}>
         {displayLabel && <Text style={[styles.label, { color: labelColor }]}>{displayLabel}</Text>}
         <View style={[styles.inputContainer, { backgroundColor: inputBg }, extraStyle]}>
-          {icon(leftIcon)}
-          <Input
+          {renderIcon(leftIcon)}
+          <InputComponent
             ref={ref}
-            {...props}
             value={value}
             placeholder={placeholder}
             multiline={props.multiline}
             onChangeText={onChangeText}
             placeholderTextColor={colors.grey2}
-            autoCorrect={props.autoCorrect ?? false}
-            textAlignVertical={props.multiline ? 'top' : 'center'}
-            keyboardType={masked ? 'numeric' : keyboardTypeMap[type]}
+            secureTextEntry={isPassword && secure}
             style={[styles.input, props.multiline && styles.multiline]}
-            autoCapitalize={getAutoCapitalize(type, props.autoCapitalize)}
+            autoCorrect={isPassword ? false : props.autoCorrect ?? false}
             numberOfLines={props.numberOfLines ?? (props.multiline ? 6 : 1)}
-            {...(masked ? { type: mask.type, options: mask.options } : { secureTextEntry: secure })}
+            {...(mask && !isPassword ? { type: mask.type, options: mask.options } : {})}
+            key={isPassword ? 'password-' + (secure ? 'secure' : 'text') : 'input-' + type}
+            keyboardType={isPassword ? 'default' : mask ? 'numeric' : keyboardTypeMap[type]}
+            autoCapitalize={isPassword ? 'none' : getAutoCapitalize(type, props.autoCapitalize)}
           />
           {right}
         </View>

@@ -1,54 +1,70 @@
 import { useApi } from '@/hooks';
-import { setToken } from '@/auth/token';
 import { fonts, colors } from '@/theme';
-import { useUser } from '@/context/UserContext';
 import OTPTextView from 'react-native-otp-textinput';
-import { Text, View, StyleSheet } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
 import { ClientsButton, ClientsLayout } from '@/components';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 
 const OTPScreen = ({ route, navigation }) => {
-  const { email } = route.params;
-  const { fetchUser } = useUser();
   const { post, loading } = useApi();
+  const [code, setCode] = useState('');
+  const { email, password } = route.params;
 
-  const onSubmit = async () => {
+  // Auto-send OTP when page loads
+  useEffect(() => {
+    sendOtp();
+  }, [sendOtp]);
+
+  const sendOtp = useCallback(async () => {
+    try {
+      await post({
+        data: { email },
+        endpoint: 'sendOtp',
+        requiresAuth: false,
+        onSuccessMessage: 'OTP sent!',
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }, [post, email]);
+
+  const verifyOtp = async () => {
     try {
       const response = await post({
-        endpoint: 'login',
+        endpoint: 'emailOtp',
         requiresAuth: false,
-        onSuccessMessage: 'Sign in successful!',
+        data: { email, otp: code },
+        onSuccessMessage: 'Email verified',
       });
 
-      if (response?.token) {
-        await setToken(response.token);
-        console.log('[OTPScreen] Token stored.');
-
-        let fetchedUser = await fetchUser();
-        const kycStatus = fetchedUser?.kyc;
-
-        !kycStatus
-          ? navigation.navigate('KYCScreen', { data: fetchedUser })
-          : navigation.reset({ index: 0, routes: [{ name: 'Dashboard' }] });
+      if (response) {
+        navigation.replace('SigninScreen', {
+          prefill: { email, password },
+        });
       }
     } catch (error) {
-      console.error('API call failed:', error);
+      console.error(error);
     }
   };
 
   return (
     <ClientsLayout title="OTP Verification">
       <View style={styles.container}>
-        <Text style={styles.label}>Enter the 6-digit code sent to you at {email}</Text>
-        <OTPTextView inputCount={6} tintColor={colors.black} textInputStyle={styles.otpInput} />
-        <Text style={styles.resend}>I haven&apos;t received a code (0.09)</Text>
-      </View>
+        <Text style={styles.label}>Enter the code sent to {email}</Text>
 
-      <ClientsButton
-        space={20}
-        loading={loading}
-        text="Verify Email"
-        onPress={() => navigation.navigate('SigninScreen')}
-      />
+        <OTPTextView
+          inputCount={6}
+          handleTextChange={setCode}
+          tintColor={colors.black}
+          textInputStyle={styles.otpInput}
+        />
+
+        <ClientsButton loading={loading} onPress={verifyOtp} text="Verify Email" />
+
+        <TouchableOpacity onPress={sendOtp}>
+          <Text style={styles.resend}>Resend Code</Text>
+        </TouchableOpacity>
+      </View>
     </ClientsLayout>
   );
 };
