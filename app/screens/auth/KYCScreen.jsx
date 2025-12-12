@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { fonts, colors } from '@/theme';
 import terms from '@/assets/texts/terms';
+import { useUser } from '@/context/UserContext';
 import { useApi, useForm, useToast } from '@/hooks';
 import { FilePicker } from '@/components/FilePicker';
 import Icon from 'react-native-vector-icons/FontAwesome6';
@@ -8,9 +9,9 @@ import { Text, View, Image, Linking, Pressable, StyleSheet } from 'react-native'
 import { ClientsInput, ClientsModal, ClientsButton, ClientsLayout } from '@/components';
 
 const KYCScreen = ({ route, navigation }) => {
-  const user = route.params.data;
   const { showWarning } = useToast();
   const { post, loading } = useApi();
+  const { user, setUser } = useUser();
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [modal, setModal] = useState({ visible: false, type: null });
   const { values, bind, validate, setField } = useForm({
@@ -21,7 +22,10 @@ const KYCScreen = ({ route, navigation }) => {
   });
 
   const openModal = (type) => setModal({ visible: true, type });
-  const closeModal = () => setModal({ visible: false, type: null });
+  const closeModal = () => {
+    if (modal.type === 'terms') { setTermsAccepted(true); }
+    setModal({ visible: false, type: null });
+  };
 
   const uploadOptions = [
     { key: 'cacCert', label: 'Upload CAC Certificate (PDF, JPG)', icon: 'upload' },
@@ -45,21 +49,9 @@ const KYCScreen = ({ route, navigation }) => {
     const formData = new FormData();
     Object.entries(values).forEach(([key, val]) => {
       if (val?.uri) {
-        let mimeType = 'application/octet-stream';
-        let fileExt = '.pdf';
-
-        if (key === 'photo') {
-          mimeType = val.type || 'image/jpeg';
-          fileExt = '.jpg';
-        } else {
-          mimeType = val.type || 'application/pdf';
-        }
-
-        formData.append(key, {
-          uri: val.uri,
-          name: val.name || `${key}${fileExt}`,
-          type: mimeType,
-        });
+        const mimeType = key === 'photo' ? val.type || 'image/jpeg' : val.type || 'application/pdf';
+        const fileExt = key === 'photo' ? '.jpg' : '.pdf';
+        formData.append(key, { uri: val.uri, name: val.name || `${key}${fileExt}`, type: mimeType });
       } else {
         formData.append(key, val || '');
       }
@@ -74,19 +66,20 @@ const KYCScreen = ({ route, navigation }) => {
         onErrorMessage: 'KYC submission failed',
         onSuccessMessage: 'KYC submitted successfully',
       });
+
+      // 🔹 Update KYC status immediately
+      setUser(prev => ({
+        ...prev,
+        kyc: { ...prev.kyc, verificationStatus: 'pending' },
+      }));
+
       navigation.navigate('Verification');
     } catch (error) {
       console.log('KYC submission failed:', error);
     }
   };
 
-  const handleCheckboxPress = () =>
-    termsAccepted ? setTermsAccepted(false) : openModal('terms');
-
-  const handleAcceptTerms = () => {
-    setTermsAccepted(true);
-    closeModal();
-  };
+  const handleCheckboxPress = () => openModal('terms');
 
   const handleContactSupport = () => openModal('contact');
 
@@ -153,15 +146,14 @@ const KYCScreen = ({ route, navigation }) => {
       <ClientsModal
         isLight
         scrollable
-        mode="fullscreen"
         onClose={closeModal}
         visible={modal.visible}
-        title={modal.type === 'terms' ? 'Terms and Conditions' : 'Contact Support'}
-        footer={modal.type === 'terms' && <ClientsButton text="I Agree" onPress={handleAcceptTerms} />}
+        title="Contact Support"
+        mode={modal.type === 'terms' ? 'bottom' : 'fullscreen'}
       >
         {modal.type === 'terms' ? (
           terms.map((item, index) => (
-            <View key={index}>
+            <View key={index} style={styles.container}>
               {item.type === 'section' ? (
                 <>
                   <Text style={styles.modalSection}>{item.number}. {item.title}</Text>
@@ -203,6 +195,10 @@ const KYCScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+    marginVertical: 10,
+  },
   section: {
     gap: 10,
     marginTop: 10,
@@ -242,8 +238,8 @@ const styles = StyleSheet.create({
     borderColor: colors.grey2,
   },
   termsChecked: { borderColor: colors.yellow2, backgroundColor: colors.yellow2 },
-  modalSection: { ...fonts.bold(16), marginTop: 10 },
-  modalText: { ...fonts.medium(), marginLeft: 15, marginTop: 2 },
+  modalSection: { ...fonts.bold(16) },
+  modalText: { ...fonts.medium(), marginLeft: 15 },
   footer: { marginTop: 20, alignItems: 'center' },
   help: { ...fonts.light(), color: colors.grey6 },
   contact: {

@@ -46,7 +46,7 @@ const ClientsModal = ({
 
                                 {footer ? <View style={[styles.sticky, footerStyle]}>{footer}</View> : null}
                             </>
-                        ) : <View>{children}</View>}
+                        ) : <ScrollView>{children}</ScrollView>}
                     </View>
                 </Animated.View>
             </TouchableWithoutFeedback>
@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     bottomOverlay: { justifyContent: 'flex-end', backgroundColor: colors.offWhite6 },
     bottom: {
         width: '100%',
+        maxHeight: '80%',
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
         backgroundColor: colors.white,

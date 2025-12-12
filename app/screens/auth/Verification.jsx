@@ -8,7 +8,7 @@ const Verification = ({ navigation }) => {
   useEffect(() => {
     setTimeout(() => {
       navigation.reset({ index: 0, routes: [{ name: 'Dashboard' }] });
-    }, 10000);
+    }, 3000);
   }, [navigation]);
 
   return (
