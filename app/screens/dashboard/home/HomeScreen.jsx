@@ -6,7 +6,7 @@ import RecentTransactions from './components/RecentTransactions';
 
 const HomeScreen = () => {
     return (
-        <ClientsLayout>
+        <ClientsLayout enableRefresh>
             <AccountBalance />
             <AccountDetails />
             <AccountUpdates />

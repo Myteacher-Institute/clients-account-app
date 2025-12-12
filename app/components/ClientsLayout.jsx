@@ -1,6 +1,7 @@
 import { colors } from '@/theme';
 import ClientsHeader from '@/components/ClientsHeader';
-import { View, StyleSheet, ScrollView, useColorScheme } from 'react-native';
+import { View, StyleSheet, ScrollView, useColorScheme, RefreshControl } from 'react-native';
+import { useUser } from '@/context/UserContext';
 
 const ClientsLayout = ({
   children,
@@ -10,7 +11,9 @@ const ClientsLayout = ({
   onBackPress = null,
   onRightPress = null,
   customHeader = null,
+  enableRefresh = false,
 }) => {
+  const { fetchUser, loading } = useUser();
   const isDark = useColorScheme() === 'dark';
   const shouldShowBack = showHeader || Boolean(title);
   const backgroundColor = isDark ? colors.offWhite0 : colors.offWhite0;
@@ -33,7 +36,13 @@ const ClientsLayout = ({
         style={styles.content}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          enableRefresh ? (
+            <RefreshControl refreshing={loading} onRefresh={fetchUser} />
+          ) : null
+        }
+      >
         {children}
       </ScrollView>
     </View>

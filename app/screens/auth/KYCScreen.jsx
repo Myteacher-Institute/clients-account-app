@@ -11,9 +11,10 @@ import { ClientsInput, ClientsModal, ClientsButton, ClientsLayout } from '@/comp
 const KYCScreen = ({ route, navigation }) => {
   const { showWarning } = useToast();
   const { post, loading } = useApi();
-  const { user, setUser } = useUser();
+  const { user, fetchUser } = useUser(); // we only need fetchUser now
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [modal, setModal] = useState({ visible: false, type: null });
+
   const { values, bind, validate, setField } = useForm({
     photo: null,
     cacCert: null,
@@ -26,6 +27,9 @@ const KYCScreen = ({ route, navigation }) => {
     if (modal.type === 'terms') { setTermsAccepted(true); }
     setModal({ visible: false, type: null });
   };
+
+  const handleCheckboxPress = () => openModal('terms');
+  const handleContactSupport = () => openModal('contact');
 
   const uploadOptions = [
     { key: 'cacCert', label: 'Upload CAC Certificate (PDF, JPG)', icon: 'upload' },
@@ -67,21 +71,12 @@ const KYCScreen = ({ route, navigation }) => {
         onSuccessMessage: 'KYC submitted successfully',
       });
 
-      // 🔹 Update KYC status immediately
-      setUser(prev => ({
-        ...prev,
-        kyc: { ...prev.kyc, verificationStatus: 'pending' },
-      }));
-
+      await fetchUser();
       navigation.navigate('Verification');
     } catch (error) {
       console.log('KYC submission failed:', error);
     }
   };
-
-  const handleCheckboxPress = () => openModal('terms');
-
-  const handleContactSupport = () => openModal('contact');
 
   const handleWhatsAppSupport = () => {
     const phone = '2349033935712';
