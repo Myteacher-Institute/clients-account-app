@@ -3011,12 +3011,12 @@ __metadata:
     react: "npm:19.0.0"
     react-native: "npm:0.79.2"
     react-native-bootsplash: "npm:^6.3.8"
+    react-native-confirmation-code-field: "npm:^8.0.1"
     react-native-encrypted-storage: "npm:^4.0.3"
     react-native-gesture-handler: "npm:^2.25.0"
     react-native-image-crop-tools: "npm:^1.6.4"
     react-native-image-picker: "npm:^8.2.1"
     react-native-masked-text: "npm:^1.13.0"
-    react-native-otp-textinput: "npm:^1.1.7"
     react-native-reanimated: "npm:^3.18.0"
     react-native-safe-area-context: "npm:^5.4.1"
     react-native-screens: "npm:^4.11.1"
@@ -8575,6 +8575,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-confirmation-code-field@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "react-native-confirmation-code-field@npm:8.0.1"
+  peerDependencies:
+    react: ">=16.4.0"
+    react-native: ">=0.64.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 10c0/ef437dd48235ce9d80c155abc62c54a40205c72f2b408dfecf9e9570ebf12314265e15265ef94faa3fd9c257087f29047cb98b14080917424a35cacef26c5beb
+  languageName: node
+  linkType: hard
+
 "react-native-encrypted-storage@npm:^4.0.3":
   version: 4.0.3
   resolution: "react-native-encrypted-storage@npm:4.0.3"
@@ -8646,16 +8661,6 @@ __metadata:
     date-and-time: "npm:0.9.0"
     tinymask: "npm:1.0.2"
   checksum: 10c0/efd70fdd40ff788c7df1ec022fcc0f53f35c996b1e2a485c0efea9e69730c5adb315ca51bb8c3d61bc43318b1f593e5a91e18aa558f6c76db0b64db3f6c6f196
-  languageName: node
-  linkType: hard
-
-"react-native-otp-textinput@npm:^1.1.7":
-  version: 1.1.7
-  resolution: "react-native-otp-textinput@npm:1.1.7"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/84390248aee445f6e4336694b4dc5af0acdca149ca284e5fdf6d39c8091cdb7886e037dcb4513a4a5d7ce994fdf834e0fb52af7d3410e02d54876a0bea75acb9
   languageName: node
   linkType: hard
 

@@ -47,7 +47,7 @@ const SigninScreen = ({ route, navigation }) => {
             <ClientsInput type="email" {...bind('email')} label="Email Address" leftIcon="mail-outline" placeholder="you@email.com" />
             <ClientsInput isPassword label="Password" {...bind('password')} leftIcon="lock-closed" placeholder="Enter your password" />
 
-            <Text style={styles.forgot}>Forgot Password?</Text>
+            <Text style={styles.forgot} onPress={() => navigation.navigate('ForgotPassword')}>Forgot Password?</Text>
 
             <ClientsButton isLight text="Sign In" loading={loading} onPress={onSubmit} />
           </ScrollView>

@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import KYCScreen from '@/screens/auth/KYCScreen';
 import OTPScreen from '@/screens/auth/OTPScreen';
+import NewPassword from '@/screens/auth/NewPassword';
 import DashboardNavigator from './DashboardNavigator';
 import Verification from '@/screens/auth/Verification';
 import SigninScreen from '@/screens/auth/SigninScreen';
 import CreateAccount from '@/screens/auth/CreateAccount';
+import ForgotPassword from '@/screens/auth/ForgotPassword';
 import SplashScreen from '@/screens/splashscreen/SplashScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -50,11 +52,13 @@ const AppNavigator = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={user ? 'Dashboard' : 'SplashScreen'}>
         <Stack.Screen name="KYCScreen" component={KYCScreen} />
         <Stack.Screen name="OTPScreen" component={OTPScreen} />
+        <Stack.Screen name="NewPassword" component={NewPassword} />
         <Stack.Screen name="SigninScreen" component={SigninScreen} />
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="Verification" component={Verification} />
         <Stack.Screen name="CreateAccount" component={CreateAccount} />
         <Stack.Screen name="Dashboard" component={DashboardNavigator} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
       </Stack.Navigator>
     </NavigationContainer>
   );
