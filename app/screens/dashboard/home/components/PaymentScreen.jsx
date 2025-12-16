@@ -3,7 +3,7 @@ import baseUrl from '@/api/baseUrl';
 import { getToken } from '@/auth/token';
 import { WebView } from 'react-native-webview';
 import { useUser } from '@/context/UserContext';
-import { View, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Pusher } from '@pusher/pusher-websocket-react-native';
 
 function getQueryParams(url) {
@@ -140,7 +140,7 @@ function PaymentScreen({ route, navigation }) {
   // 👈 empty array → runs once when PaymentScreen mounts
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <WebView
         source={{ uri: checkoutURL }}
         onShouldStartLoadWithRequest={handleWebViewNavigationIOS}
@@ -149,12 +149,22 @@ function PaymentScreen({ route, navigation }) {
           <ActivityIndicator
             size="large"
             color="#000"
-            style={{ flex: 1, justifyContent: 'center' }}
+            style={styles.loader}
           />
         )}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+});
 
 export default PaymentScreen;
