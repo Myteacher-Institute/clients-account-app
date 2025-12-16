@@ -4,7 +4,7 @@ const endpoints = {
   userProfile: id => `users/${id}`,
   sendOtp: 'users/verify-email/send',
   uploadKYC: id => `kyc/${id}/upload`,
-  resetPassword: 'users/reset-password',
+  resetPassword: 'users/resetPassword',
   emailOtp: 'users/verify-email/confirm',
   verifyTopUp: id => 'users/verifyTopUp',
   forgotPassword: 'users/forgot-password',

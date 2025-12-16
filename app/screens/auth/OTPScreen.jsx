@@ -37,6 +37,13 @@ const OTPScreen = ({ route, navigation }) => {
 
   const verifyOtp = async () => {
     try {
+      if (route.params?.nextScreen) {
+        // Skip server confirm for password-reset flow so the code remains in DB
+        navigation.replace(route.params.nextScreen, { email, code });
+        return;
+      }
+
+      // Default behavior: verify email and clear OTP
       const response = await post({
         requiresAuth: false,
         endpoint: 'emailOtp',
@@ -45,14 +52,7 @@ const OTPScreen = ({ route, navigation }) => {
       });
 
       if (response) {
-        if (route.params?.nextScreen) {
-          // If OTP was requested as part of another flow (eg. reset password), navigate there
-          navigation.replace(route.params.nextScreen, { email, code });
-        } else {
-          navigation.replace('SigninScreen', {
-            prefill: { email, password },
-          });
-        }
+        navigation.replace('SigninScreen', { prefill: { email, password } });
       }
     } catch (error) {
       console.error(error);

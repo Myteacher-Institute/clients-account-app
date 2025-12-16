@@ -1,29 +1,17 @@
 import { fonts, colors } from '@/theme';
-import { useApi, useForm } from '@/hooks';
+import { useForm } from '@/hooks';
 import { Text, StyleSheet } from 'react-native';
 import { ClientsButton, ClientsLayout, ClientsInput } from '@/components';
 
 const ForgotPassword = ({ navigation }) => {
-    const { post, loading } = useApi();
     const { bind, values, validate } = useForm({ email: '' });
 
-    const sendCode = async () => {
+    const sendCode = () => {
         if (!validate()) {
             return;
         }
 
-        try {
-            // Use the same sendOtp endpoint so OTPScreen behavior is consistent
-            await post({
-                endpoint: 'sendOtp',
-                requiresAuth: false,
-                data: { email: values.email },
-                onSuccessMessage: 'Reset code sent to email',
-            });
-            navigation.navigate('OTPScreen', { email: values.email, nextScreen: 'NewPassword' });
-        } catch (err) {
-            console.error('Forgot password failed', err);
-        }
+        navigation.navigate('OTPScreen', { email: values.email, nextScreen: 'NewPassword' });
     };
 
     return (
@@ -34,7 +22,7 @@ const ForgotPassword = ({ navigation }) => {
 
             <ClientsInput type="email" {...bind('email')} label="Email Address" leftIcon="mail-outline" placeholder="you@email.com" />
 
-            <ClientsButton space={18} text="Send Reset Code" loading={loading} onPress={sendCode} />
+            <ClientsButton space={{ top: 18 }} text="Send Reset Code" onPress={sendCode} />
         </ClientsLayout>
     );
 };
