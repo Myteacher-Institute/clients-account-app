@@ -1,29 +1,28 @@
 import { fonts, colors } from '@/theme';
-import { useUser } from '@/context/UserContext';
 import { useNavigation } from '@react-navigation/native';
 import { Text, View, Pressable, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const AccountInfo = () => {
-    const { user } = useUser();
     const navigation = useNavigation();
 
     const infos = [
         {
-            color: colors.blue4,
-            icon: 'scale-balance',
-            title: 'Chamber Name',
-            content: user?.chamberName,
+            color: colors.blue1,
+            icon: 'bank-outline',
+            screen: 'PayoutMethods',
+            title: 'Payment Methods',
+            content: 'Add payment method',
         },
         {
-            color: colors.grey1,
+            color: colors.green0,
             icon: 'lock-outline',
             screen: 'SecurityScreen',
             title: 'Password & Security',
             content: 'Change password, 2FA',
         },
         {
-            color: colors.brown3,
+            color: colors.red0,
             icon: 'bell-outline',
             title: 'Notifications',
             screen: 'NotificationsScreen',
@@ -31,8 +30,8 @@ const AccountInfo = () => {
         },
         {
             title: 'About App',
-            color: colors.grey4,
             icon: 'alert-circle',
+            color: colors.yellow3,
             screen: 'AboutScreen',
             content: 'Version & Legal',
         },
