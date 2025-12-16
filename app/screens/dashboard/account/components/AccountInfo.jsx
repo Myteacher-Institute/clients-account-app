@@ -68,8 +68,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         marginBottom: 10,
         backgroundColor: colors.white,
-        boxShadow:
-            '0px 1px 2px rgba(0, 0, 0, 0.10), 0px 1px 3px rgba(0, 0, 0, 0.10)',
+        boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.10), 0px 1px 3px rgba(0, 0, 0, 0.10)',
     },
     info: {
         padding: 16,
